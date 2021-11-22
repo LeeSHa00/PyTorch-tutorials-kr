@@ -270,7 +270,7 @@ class Skew(nn.Module):
         return A - A.transpose(-1, -2)
 
     def right_inverse(self, A):
-        # A가 비대칭 대칭이라고 가정합니다.
+        # A가 반대칭 행렬이라고 가정합니다.
         # 우리는 앞으로 사용될 위쪽 삼각형 요소를 사용합니다.
         return A.triu(1)
 
@@ -279,7 +279,7 @@ class Skew(nn.Module):
 layer = nn.Linear(3, 3)
 parametrize.register_parametrization(layer, "weight", Skew())
 X = torch.rand(3, 3)
-X = X - X.T                             # X 는 이제 비대칭
+X = X - X.T                             # X 는 이제 반대칭 행렬
 layer.weight = X                        # layer.weight를 X로 초기화
 print(torch.dist(layer.weight, X))      # layer.weight == X
 
@@ -292,7 +292,7 @@ class CayleyMap(nn.Module):
         self.register_buffer("Id", torch.eye(n))
 
     def forward(self, X):
-        # X는 비대칭이라고 가정
+        # X는 반대칭 행렬로 
         # (I + X)(I - X)^{-1}
         return torch.solve(self.Id + X, self.Id - X).solution
 
